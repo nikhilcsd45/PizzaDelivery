@@ -9,23 +9,24 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 
 order_router=APIRouter()
-
 @order_router.get("/")
 def hello(Authroize :AuthJWT=Depends()):
     """
         ## Sample hello world route
-    
     """
     try:
         Authroize.jwt_required()
     except Exception as e:
         raise HTTPException(status_code=404,detail="token invalid or expired")
-    return {"message: hello"}
+    return {"message: hello World"}
+
+
+
+
+
 
 @order_router.post("/order")
 async def order(order:OrderModel,Authroize :AuthJWT=Depends(),db:Session=Depends(get_db)):
-    
-    
     """
         ## Placing an Order
         This requires the following
@@ -33,7 +34,6 @@ async def order(order:OrderModel,Authroize :AuthJWT=Depends(),db:Session=Depends
         - pizza_size: str
     
     """
-
     try:
         Authroize.jwt_required()
     except Exception as e:
@@ -57,13 +57,17 @@ async def order(order:OrderModel,Authroize :AuthJWT=Depends(),db:Session=Depends
     }
     return JSONResponse(status_code=200,content=res)
 
+
+
+
+
+
+
 @order_router.post("/orders")
 async def orders(Authroize :AuthJWT=Depends(),db:Session=Depends(get_db)):
     """
         ## List all orders
         This lists all  orders made. It can be accessed by superusers
-        
-    
     """
 
     try:
@@ -87,13 +91,15 @@ async def orders(Authroize :AuthJWT=Depends(),db:Session=Depends(get_db)):
     raise HTTPException(status_code=404,detail="you are not a superuser")
     
 
+
+
+
+
 @order_router.post("/order/{order_id}")
 async def order_using_id(order_id:str,Authorize :AuthJWT=Depends(),db:Session=Depends(get_db)):
     """
         ## Get an order by its ID
         This gets an order by its ID and is only accessed by a superuser
-        
-
     """
     try:
         Authorize.jwt_required()
@@ -113,12 +119,14 @@ async def order_using_id(order_id:str,Authorize :AuthJWT=Depends(),db:Session=De
     raise HTTPException(status_code=404,detail="Id invalid")
 
 
-@order_router.post("/user/orders/")
+
+
+
+@order_router.get("/user/orders/")
 async def user_orders(Authorize :AuthJWT=Depends(),db:Session=Depends(get_db)):
     """
         ## Get a current user's orders
-        This lists the orders made by the currently logged in users
-    
+        This lists the orders made by the currently logged in user
     """
     try:
         Authorize.jwt_required()
@@ -129,14 +137,17 @@ async def user_orders(Authorize :AuthJWT=Depends(),db:Session=Depends(get_db)):
     
     return jsonable_encoder(current_user.orders)
 
+
+
+
+
+
 @order_router.get("/user/order/{order_id}")
 async def user_order_using_id(order_id:str,Authorize:AuthJWT=Depends(),db:Session=Depends(get_db)):
     """
         ## Get a specific order by the currently logged in user
         This returns an order by ID for the currently logged in user
-    
     """
-    
     try:
         Authorize.jwt_required()
     except Exception as e :
@@ -153,6 +164,12 @@ async def user_order_using_id(order_id:str,Authorize:AuthJWT=Depends(),db:Sessio
             print("Matched:",o)
             return jsonable_encoder(o)
     raise HTTPException(status_code=404,detail="Invalid id")
+    
+    
+    
+    
+    
+    
     
 @order_router.get("/order/update/{order_id}")
 async def updaate_order_using_id(order_id:str,order:OrderModel,Authorize:AuthJWT=Depends(),db:Session=Depends(get_db)):
@@ -177,6 +194,9 @@ async def updaate_order_using_id(order_id:str,order:OrderModel,Authorize:AuthJWT
     db.commit()
     order_to_update=db.query(Order).filter(Order.id==order_id).first()
     return jsonable_encoder(order_to_update)
+    
+    
+    
     
     
     
@@ -209,6 +229,8 @@ async def update_order_status(order_id:str,order_status:OrderStatusModel,Authori
     res={"message": "Order status updated successfully","updated":jsonable_encoder(order_to_updatestatus),"updated_status":updated.order_status}
     
     return JSONResponse(status_code=200,content=res)
+
+
 
 
    

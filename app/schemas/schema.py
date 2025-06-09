@@ -19,7 +19,8 @@ class SignUpModel(BaseModel):
         
 class Settings(BaseModel):
     authjwt_secret_key:str="1eb5526d6c7577464365fc6ccbeea5b5836ec652049c361faa0a8fea585889d4"
-    
+    #impot secrets
+    #secrets.token_hex
     
 class LoginModel(BaseModel):
     username:str
